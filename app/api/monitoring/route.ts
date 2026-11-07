@@ -1,0 +1,4 @@
+import {env} from 'cloudflare:workers';
+import {runDue} from '@/lib/monitoring';
+import {fail,database} from '@/lib/studio-server';
+export async function POST(req:Request){try{const auth=req.headers.get('authorization')||'';if(env.MONITOR_RUN_SECRET&&auth==='Bearer '+env.MONITOR_RUN_SECRET)return Response.json(await runDue());if(!auth.startsWith('Bearer ')||auth.length>300)return Response.json({error:'Scheduler authentication required.'},{status:401});const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(auth.slice(7))))).map(x=>x.toString(16).padStart(2,'0')).join('');const scope=await database().prepare('SELECT workspace FROM studio_scheduler_secrets WHERE hash = ?').bind(hash).first<{workspace:string}>();if(!scope)return Response.json({error:'Scheduler authentication required.'},{status:401});return Response.json(await runDue(scope.workspace));}catch(e){return fail(e);}}

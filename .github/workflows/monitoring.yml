@@ -1,0 +1,24 @@
+name: Run due website monitors
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+permissions:
+  contents: read
+concurrency:
+  group: aimnex-monitoring
+  cancel-in-progress: false
+jobs:
+  monitoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      STUDIO_URL: ${{ vars.STUDIO_URL }}
+      MONITOR_RUN_SECRET: ${{ secrets.MONITOR_RUN_SECRET }}
+      SITES_SERVICE_TOKEN: ${{ secrets.SITES_SERVICE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node scripts/run-monitors.mjs

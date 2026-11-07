@@ -1,0 +1,12 @@
+import 'fake-indexeddb/auto';
+import {webcrypto} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {writeVault,unlockVault,readVault,removeVault} from '../public/offline-vault.js';
+const original={version:1,records:[{title:'Private investigation note',content:'Sensitive test fixture'}],drafts:[]};
+await writeVault('qa','correct horse fixture',original);
+assert.deepEqual(await unlockVault('qa','correct horse fixture'),original);
+await assert.rejects(unlockVault('qa','wrong passphrase'));
+const stored=await readVault('qa');assert(stored.cipher instanceof ArrayBuffer);assert(!new TextDecoder().decode(stored.cipher).includes('Sensitive'));
+await writeVault('qa','correct horse fixture',{...original,drafts:[{id:'draft-1'}]});assert.equal((await unlockVault('qa','correct horse fixture')).drafts.length,1);
+await removeVault('qa');assert.equal(await readVault('qa'),undefined);
+console.log('PASS: encrypted offline roundtrip, wrong-password rejection, ciphertext opacity, draft preservation and removal.');

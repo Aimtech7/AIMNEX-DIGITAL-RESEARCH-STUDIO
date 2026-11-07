@@ -1,0 +1,16 @@
+export type Case={id:string;kind:'case';title:string;client:string;status:string;domain:string;purpose:string;authorized:boolean;created:string};
+export type Evidence={id:string;kind:'evidence';parent:string;title:string;type:string;content:string;source:string;hash?:string;size?:number;filename?:string;created:string};
+export type Finding={id:string;kind:'finding';parent:string;title:string;severity:string;status:string;detail:string;recommendation:string;evidenceIds:string[];fingerprint?:string;confidence?:string;created:string};
+export type Report={id:string;kind:'report';parent:string;title:string;summary:string;snapshot:string;published?:boolean;created:string};
+export type Activity={id:string;kind:'activity';parent?:string;title:string;detail:string;created:string};
+export type RecordItem=Case|Evidence|Finding|Report|Activity|Task|Monitor|Alert|Relationship|Job|Conversation|Learning;
+export const statuses=['Draft','In progress','In review','Closed'];
+export const severities=['Informational','Low','Medium','High','Critical'];
+export const dateLabel=(v:string)=>new Date(v).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+export type Task={id:string;kind:'task';parent:string;title:string;assignee:string;due:string;status:'Open'|'In progress'|'Awaiting verification'|'Done';findingId:string;resolutionEvidence:string;created:string};
+export type Monitor={id:string;kind:'monitor';parent:string;title:string;intervalHours:number;enabled:boolean;lastRun:string;nextRun:string;baseline:string;created:string};
+export type Alert={id:string;kind:'alert';parent:string;title:string;detail:string;read:boolean;created:string};
+export type Relationship={id:string;kind:'relationship';parent:string;title:string;from:string;to:string;basis:'Observed'|'Hypothesis';evidenceIds:string[];created:string};
+export type Job={id:string;kind:'job';parent:string;title:string;status:'Running'|'Completed'|'Failed'|'Cancelled';detail:string;created:string};
+export type Conversation={id:string;kind:'conversation';parent:string;title:string;question:string;answer:string;citations:string[];tokens:number;created:string};
+export type Learning={id:string;kind:'learning';title:string;lesson:string;score:number;total:number;created:string};
